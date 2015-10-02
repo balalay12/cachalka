@@ -9,8 +9,8 @@ from django.utils.functional import cached_property
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Exercises
-from .myserializer import ExercisesSerializer
+from .models import Exercises, Sets
+from .myserializer import ExercisesSerializer, SetSerializer, SetsByDateSerializer
 
 class Registration(View):
     def post(self, request):
@@ -188,6 +188,15 @@ class Main(TemplateView):
 class Exercises(Base):
     model = Exercises
     serializer = ExercisesSerializer()
+
+    def get(self, request):
+        return self.read(request)
+
+
+class Sets(Base):
+    model = Sets
+    # serializer = SetSerializer()
+    serializer = SetsByDateSerializer()
 
     def get(self, request):
         return self.read(request)

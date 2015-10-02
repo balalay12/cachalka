@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngRoute', 'ngResource', 'ngCookies']);
+var app = angular.module('app', ['ngRoute', 'ngResource', 'ngCookies', 'ui.bootstrap']);
 
 app.run( function run( $http, $cookies ){
     // For CSRF token compatibility with Django
@@ -40,15 +40,93 @@ app.config(function($routeProvider, $locationProvider) {
 	});
 });
 
-// app.factory('Exercises', ['$resource', function($resource) {
-//     return $resource('/api/exercises');
-// }]);
+ app.factory('Exercises', ['$resource', function($resource) {
+     return $resource('/api/exercises');
+ }]);
 
-app.controller('MainController', ['$scope', '$http', '$location', '$log', function($scope, $http, $location, $log) {
+ app.factory('Sets', ['$resource', function($resource) {
+ 	return $resource('/api/sets');
+ }]);
+
+app.controller('MainController', ['$scope', '$http', '$location', '$log', 'Sets', function($scope, $http, $location, $log, Sets) {
 	$http.post('api/check/auth/')
 	.error(function(data, status) {
 		$location.path('/login/')
 	});
+
+	Sets.query(function(data) {
+		$log.debug(data[0].sets);
+		$scope.set = data.sets;
+	});
+
+	// Calendar
+	$scope.today = function() {
+		$scope.dt = new Date();
+	};
+	$scope.today();
+
+	$scope.clear = function () {
+		$scope.dt = null;
+	};
+
+	// Disable weekend selection
+	//  $scope.disabled = function(date, mode) {
+	//    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
+	//  };
+
+	$scope.toggleMin = function() {
+		$scope.minDate = $scope.minDate ? null : new Date();
+	};
+	$scope.toggleMin();
+	$scope.maxDate = new Date(2020, 5, 22);
+
+	$scope.open = function($event) {
+		$scope.status.opened = true;
+	};
+
+	$scope.dateOptions = {
+		formatYear: 'yy',
+		startingDay: 0
+	};
+
+	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+	$scope.format = $scope.formats[0];
+
+	$scope.status = {
+		opened: false
+	};
+
+	var tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+	var afterTomorrow = new Date();
+	afterTomorrow.setDate(tomorrow.getDate() + 2);
+	$scope.events =
+	[
+		{
+			date: tomorrow,
+			status: 'full'
+		},
+		{
+			date: afterTomorrow,
+			status: 'partially'
+		}
+	];
+
+	$scope.getDayClass = function(date, mode) {
+		if (mode === 'day') {
+			var dayToCheck = new Date(date).setHours(0,0,0,0);
+
+			for (var i=0;i<$scope.events.length;i++){
+				var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+
+				if (dayToCheck === currentDay) {
+					return $scope.events[i].status;
+				}
+			}
+		}
+
+		return '';
+	};
 }]);
 
 app.controller('RegistrationController', ['$scope', '$http', '$location', '$log', function($scope, $http, $location, $log) {

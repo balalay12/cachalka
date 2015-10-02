@@ -29,6 +29,7 @@ class Exercises(models.Model):
 class Sets(TimeStampedModel):
     user = models.ForeignKey('auth.User')
     exercise = models.ForeignKey(Exercises)
+    # repeats = models.ForeignKey(Repeats, default=None)
 
     class Meta:
         verbose_name = u'подход'
@@ -36,7 +37,7 @@ class Sets(TimeStampedModel):
 
 
 class Repeats(models.Model):
-    set = models.ManyToManyField(Sets)
+    set = models.ForeignKey(Sets, default=None)
     weight = models.IntegerField(verbose_name=u"Вес")
     repeats = models.IntegerField(verbose_name=u'Повторы')
 

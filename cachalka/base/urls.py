@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^login/$', views.LogIn.as_view(), name='login'),
     url(r'^logout/$', views.LogOut.as_view(), name='logout'),
     url(r'^api/exercises/$', views.Exercises.as_view(), name='exercises'),
+    url(r'^api/sets/$', views.Sets.as_view(), name='sets'),
     url(r'^api/check/$', views.CheckReg.as_view(), name='check'),
     url(r'^api/check/auth/$', views.CheckAuth.as_view(), name='auth')
 ]
