@@ -37,8 +37,7 @@ class SetsByDateSerializer(Serializer):
             repeats[rep.weight] = rep.repeats
         sets['exercise_name'] = str(Exercises.objects.get(id=obj.exercise.id))
         sets['repeats'] = repeats
-        t[json.dumps(obj.created, cls=DjangoJSONEncoder)] = sets
-        self._current['created'] = json.dumps(obj.created, cls=DjangoJSONEncoder)
-        self._current['modified'] = json.dumps(obj.modified, cls=DjangoJSONEncoder)
-        self._current['sets'] = t
+        # t['items'] = sets
+        self._current['date'] = obj.date.strftime("%Y-%m-%d")
+        self._current['items'] = sets
         self.objects.append(self._current)

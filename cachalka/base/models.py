@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from model_utils.models import TimeStampedModel
 
 class Categories(models.Model):
     name = models.CharField(max_length=255)
@@ -26,7 +25,8 @@ class Exercises(models.Model):
         verbose_name_plural = u'упражнения'
 
 
-class Sets(TimeStampedModel):
+class Sets(models.Model):
+    date = models.DateField(default=None)
     user = models.ForeignKey('auth.User')
     exercise = models.ForeignKey(Exercises)
     # repeats = models.ForeignKey(Repeats, default=None)

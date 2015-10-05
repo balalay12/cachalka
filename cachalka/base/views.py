@@ -9,6 +9,7 @@ from django.utils.functional import cached_property
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from collections import defaultdict
 from .models import Exercises, Sets
 from .myserializer import ExercisesSerializer, SetSerializer, SetsByDateSerializer
 
@@ -200,6 +201,14 @@ class Sets(Base):
 
     def get(self, request):
         return self.read(request)
+
+    def get_collection(self):
+        qs = self.get_queryset()
+        data = self.serialize_qs(qs)
+        out_data = defaultdict(list)
+        for item in data:
+            out_data[item["date"]].append(item)
+        return self.success_response(out_data)
 
 
 class CheckReg(View):

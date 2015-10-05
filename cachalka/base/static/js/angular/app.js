@@ -55,7 +55,7 @@ app.controller('MainController', ['$scope', '$http', '$location', '$log', 'Sets'
 	});
 
 	Sets.query(function(data) {
-		$log.debug(data[0].sets);
+		$log.debug(data);
 		$scope.set = data.sets;
 	});
 
