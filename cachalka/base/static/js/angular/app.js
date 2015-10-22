@@ -1,21 +1,26 @@
+
 var app = angular.module('app', ['ngRoute', 'ngResource', 'ngCookies', 'ui.bootstrap']);
 
 app.run( function run( $http, $cookies ){
-    // For CSRF token compatibility with Django
-    $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
-    $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+	// For CSRF token compatibility with Django
+	$http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
+	$http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 });
 
 app.config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('{$');
-    $interpolateProvider.endSymbol('$}');
+	$interpolateProvider.startSymbol('{$');
+	$interpolateProvider.endSymbol('$}');
 });
 
 app.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+	$httpProvider.defaults.xsrfCookieName = 'csrftoken';
+	$httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+	$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+}]);
+
+app.config(['$resourceProvider', function($resourceProvider) {
+	$resourceProvider.defaults.stripTrailingSlashes = false;
 }]);
 
 app.config(function($routeProvider, $locationProvider) {
@@ -40,24 +45,44 @@ app.config(function($routeProvider, $locationProvider) {
 	});
 });
 
- app.factory('Exercises', ['$resource', function($resource) {
-     return $resource('/api/exercises');
- }]);
+app.factory('Exercises', ['$resource', function($resource) {
+	return $resource('/api/exercises/');
+}]);
 
- app.factory('Sets', ['$resource', function($resource) {
- 	return $resource('/api/sets');
- }]);
+app.factory('Categories', ['$resource', function($resource) {
+	return $resource('/api/categories/');
+}]);
 
-app.controller('MainController', ['$scope', '$http', '$location', '$log', 'Sets', function($scope, $http, $location, $log, Sets) {
+app.factory('Sets', ['$resource', function($resource) {
+	return $resource('/api/sets/', {}, {
+		getAllSets: {method:'GET', isArray: false}
+	});
+}]);
+
+app.factory('Repeats', ['$resource', function($resource) {
+	return $resource('/api/repeats/');
+}]);
+
+app.controller('MainController', ['$rootScope', '$scope', '$http', '$location', '$log', '$modal', 'Sets', function($rootScope, $scope, $http, $location, $log, $modal, Sets) {
+	// Check user authorization
 	$http.post('api/check/auth/')
 	.error(function(data, status) {
 		$location.path('/login/')
 	});
 
-	Sets.query(function(data) {
+	Sets.getAllSets(function(data) {
 		$log.debug(data);
-		$scope.set = data.sets;
+		$scope.sets = data;
 	});
+
+	$scope.addExercise = function(_date, _user) {
+		$rootScope.user_id = _user;
+		$rootScope.date = _date;
+		var addExerciseModal = $modal.open({
+			templateUrl: template_dirs + '/add_exercise.html',
+			controller: 'AddExerciseController',
+		});	
+	};
 
 	// Calendar
 	$scope.today = function() {
@@ -86,7 +111,7 @@ app.controller('MainController', ['$scope', '$http', '$location', '$log', 'Sets'
 
 	$scope.dateOptions = {
 		formatYear: 'yy',
-		startingDay: 0
+		startingDay: 7
 	};
 
 	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
@@ -126,6 +151,49 @@ app.controller('MainController', ['$scope', '$http', '$location', '$log', 'Sets'
 		}
 
 		return '';
+	};
+
+	$log.debug($scope.dt);
+}]);
+
+app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', function($scope, $rootScope, Categories, Exercises, Sets, Repeats, $addExerciseModal) {
+	$scope.day = $rootScope.date;
+	Categories.query(function(data) {
+		$scope.categories = data;
+		console.log(data);
+	});
+	
+	$scope.$watch('cat', function(newVal, oldVal) {
+		if(angular.isDefined(oldVal) | angular.isDefined(newVal)) {
+			Exercises.query({category_id:newVal.category_id}, function(data) {
+				$scope.exercises = data;
+			});
+		}
+	});
+
+	$scope.sets = [];
+	$scope.addSet = function() {
+		$scope.sets.push({weight: $scope.weight, repeats: $scope.repeats});
+		console.log('in function' + $scope.sets);
+		$scope.weight = null;
+		$scope.repeats = null;
+		return $scope.sets
+	};
+
+	$scope.submit = function() {
+		var set = {};
+		set['date'] = $scope.day;
+		set['user'] = $rootScope.user_id;
+		set['exercise'] = $scope.exercise.exercise_id
+		Sets.save({add:set}).$promise.then(function(data) {
+			set_id = data.set;
+			console.log('id => ' + data.set);
+		}).then(function(data) {
+			var repeat = {};
+			repeat['set'] = set_id;
+			repeat['repeats'] = $scope.sets;
+			Repeats.save({add:repeat});
+		})
 	};
 }]);
 

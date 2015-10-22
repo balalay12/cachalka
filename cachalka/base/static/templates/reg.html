@@ -28,7 +28,7 @@
 			<div class="form-group" ng-class="{ 'has-error' : reg_form.inputPass.$invalid && reg_form.inputPass.$touched }">
 				<label class="col-lg-4 control-label" for="inputPass">Введите пароль</label>
 				<div class="col-lg-8">
-					<input class="form-control input-sm" type="text" ng-model="new_user.password" id="inputPass" name="inputPass" placeholder="Пароль" required="" />
+					<input class="form-control input-sm" type="password" ng-model="new_user.password" id="inputPass" name="inputPass" placeholder="Пароль" required="" />
 					<p ng-show="reg_form.inputPass.$invalid && reg_form.inputPass.$touched" class="help-block">Введите пароль</p>
 				</div>
 			</div>

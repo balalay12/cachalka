@@ -10,12 +10,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
-from .models import Exercises, Sets
-from .myserializer import ExercisesSerializer, SetSerializer, SetsByDateSerializer
+from .models import Exercises, Sets, Categories, Repeats
+from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer
+from .forms import SetForm, RepeatsForm
 
 class Registration(View):
     def post(self, request):
-        errors = {}
+        errors = dict()
         if request.user.is_authenticated():
             errors['auth'] = u'Вы уже авторизованы'
             return HttpResponse(json.dumps(errors), status='403')
@@ -76,6 +77,8 @@ class Base(View):
     update_form_class = None
     serializer = None
     model = None
+    by_user = None
+    return_last_id = None
 
     def read(self, request):
         if self.object_id:
@@ -86,14 +89,32 @@ class Base(View):
     def create(self, request):
         if self.create_form_class is None:
             self.failed_response(405)
-        print self.data
-        form = self.create_form_class(self.data['add'])
-        if form.is_valid():
-            instance = form.save(commit=True)
-            # instance.user.add(self.request.user.id)
+        print('create data =>', self.data['add'])
+        #############################################
+        # TODO: i guess this shit need reworking
+        if self.data['add'].get('repeats'):
+            repeats = self.data['add'].get('repeats')
+            set = self.data['add'].get('set')
+            for repeat in repeats:
+                repeat['set'] = set
+                form = self.create_form_class(repeat)
+                if form.is_valid():
+                    form.save(commit=True)
+                else:
+                    self.failed_response(405)
             return HttpResponse()
+        ##################################################
         else:
-            self.failed_response(405)
+            form = self.create_form_class(self.data['add'])
+            if form.is_valid():
+                instance = form.save(commit=True)
+                if self.return_last_id:
+                    last_set_id = {'set': instance.id}
+                    return self.success_response(last_set_id)
+                else:
+                    return HttpResponse()
+            else:
+                self.failed_response(405)
 
     def update(self, request):
         if self.update_form_class is None or not self.object_id:
@@ -126,11 +147,11 @@ class Base(View):
         if self.request.method.upper() == 'POST':
             try:
                 data = json.loads(self.request.body)
+                print("data {0}".format(data))
             except ValueError:
                 pass
             else:
                 _data.update(data)
-        print(_data)
         return Context(_data)
 
     # get ID from request
@@ -138,26 +159,33 @@ class Base(View):
     def object_id(self):
         return self.data.get('id')
 
+    @property
+    def category_id(self):
+        return self.data.get('category_id')
+    
     def get_single_item(self):
         try:
             qs = self.get_queryset().filter(pk=self.object_id)
-            # ne rabotaet
-            print 'len %s' % len(qs)
             assert len(qs) == 1
         except AssertionError:
             return self.failed_response(404)
         out_data = self.serialize_qs(qs)
-        print out_data
         return self.success_response(out_data)
 
     def get_collection(self):
-        qs = self.get_queryset()
+        if self.category_id:
+            qs = self.get_queryset().filter(category=self.category_id)
+        else:
+            qs = self.get_queryset()
         out_data = self.serialize_qs(qs)
         return self.success_response(out_data)
 
     # get all objects from database
     def get_queryset(self):
-        return self.model.objects.all()
+        if self.by_user:
+            return self.model.objects.all().filter(user=self.request.user.id)
+        else:
+            return self.model.objects.all()
 
     # serialize object
     def serialize_qs(self, qs):
@@ -165,11 +193,11 @@ class Base(View):
 
     # success response with data
     def success_response(self, data):
-        return HttpResponse(json.dumps(data), content_type='application/json')
+        return HttpResponse(json.dumps(data), status=200, content_type='application/json')
 
     # failed response with data
     def failed_response(self, status, msg='SYSTEM ERROR!'):
-        data = {}
+        data = dict()
         data['error'] = msg
         return HttpResponse(json.dumps(data), status=status)
 
@@ -196,11 +224,19 @@ class Exercises(Base):
 
 class Sets(Base):
     model = Sets
-    # serializer = SetSerializer()
     serializer = SetsByDateSerializer()
+    create_form_class = SetForm
+    by_user = True
+    return_last_id = True
 
     def get(self, request):
         return self.read(request)
+
+    def post(self, request):
+        if self.object_id:
+            return self.update(request)
+        else:
+            return self.create(request)
 
     def get_collection(self):
         qs = self.get_queryset()
@@ -209,6 +245,22 @@ class Sets(Base):
         for item in data:
             out_data[item["date"]].append(item)
         return self.success_response(out_data)
+
+
+class Repeats(Base):
+    model = Repeats
+    create_form_class = RepeatsForm
+
+    def post(self, request):
+        return self.create(request)
+
+
+class Categories(Base):
+    model = Categories
+    serializer = CategoriesSerializer()
+
+    def get(self, request):
+        return self.read(request)
 
 
 class CheckReg(View):
