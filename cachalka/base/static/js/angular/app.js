@@ -75,13 +75,92 @@ app.controller('MainController', ['$rootScope', '$scope', '$http', '$location', 
 		$scope.sets = data;
 	});
 
-	$scope.addExercise = function(_date, _user) {
-		$rootScope.user_id = _user;
+	$scope.addExercise = function(_date) {
 		$rootScope.date = _date;
 		var addExerciseModal = $modal.open({
 			templateUrl: template_dirs + '/add_exercise.html',
 			controller: 'AddExerciseController',
 		});	
+	};
+
+	$scope.addDayTraining = function() {
+		var addDayTraining = $modal.open({
+			templateUrl: template_dirs + '/add_day.html',
+			controller: 'AddDayTrainingController'
+		});
+	};
+}]);
+
+app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', function($scope, $rootScope, Categories, Exercises, Sets, Repeats, $addExerciseModal) {
+	$scope.day = $rootScope.date;
+	Categories.query(function(data) {
+		$scope.categories = data;
+		console.log(data);
+	});
+	
+	$scope.$watch('cat', function(newVal, oldVal) {
+		if(angular.isDefined(oldVal) | angular.isDefined(newVal)) {
+			Exercises.query({category_id:newVal.category_id}, function(data) {
+				$scope.exercises = data;
+			});
+		}
+	});
+
+	$scope.sets = [];
+	$scope.addSet = function() {
+		$scope.sets.push({weight: $scope.weight, repeats: $scope.repeats});
+		console.log('in function' + $scope.sets);
+		$scope.weight = null;
+		$scope.repeats = null;
+		return $scope.sets
+	};
+
+	$scope.submit = function() {
+		var set = {};
+		set['date'] = $scope.day;
+		set['user'] = user_id;
+		set['exercise'] = $scope.exercise.exercise_id
+		Sets.save({add:set}).$promise.then(function(data) {
+			set_id = data.set;
+			console.log('id => ' + data.set);
+		}).then(function(data) {
+			for(var i=0;i<$scope.sets.length;i++) {
+				$scope.sets[i]['set'] = set_id
+				Repeats.save({add:$scope.sets[i]});
+			}
+		})
+	};
+}]);
+
+app.controller('AddDayTrainingController', ['$scope', 'Categories', 'Exercises', function($scope, Categories, Exercises, $addDayTraining) {
+	Categories.query(function(data) {
+		$scope.categories = data;
+		console.log(data);
+	});
+
+	$scope.$watch('cat', function(newVal, oldVal) {
+		if(angular.isDefined(oldVal) | angular.isDefined(newVal)) {
+			Exercises.query({category_id:newVal.category_id}, function(data) {
+				$scope.exercises = data;
+			});
+		}
+	});
+
+	$scope.sets = [];
+	$scope.addSet = function() {
+		$scope.sets.push({weight: $scope.weight, repeats: $scope.repeats});
+		console.log('in function' + $scope.sets);
+		$scope.weight = null;
+		$scope.repeats = null;
+		return $scope.sets
+	};
+
+	$scope.training = [];
+	$scope.addExercise = function() {
+		$scope.training.push({date:$scope.date, user: user_id, exercise: $scope.exercise.exercise_id, exercise_name: $scope.exercise.name, repeats: $scope.sets});
+		$scope.exercise = null;
+		$scope.sets = [];
+		console.log($scope.training);
 	};
 
 	// Calendar
@@ -151,49 +230,6 @@ app.controller('MainController', ['$rootScope', '$scope', '$http', '$location', 
 		}
 
 		return '';
-	};
-
-	$log.debug($scope.dt);
-}]);
-
-app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', function($scope, $rootScope, Categories, Exercises, Sets, Repeats, $addExerciseModal) {
-	$scope.day = $rootScope.date;
-	Categories.query(function(data) {
-		$scope.categories = data;
-		console.log(data);
-	});
-	
-	$scope.$watch('cat', function(newVal, oldVal) {
-		if(angular.isDefined(oldVal) | angular.isDefined(newVal)) {
-			Exercises.query({category_id:newVal.category_id}, function(data) {
-				$scope.exercises = data;
-			});
-		}
-	});
-
-	$scope.sets = [];
-	$scope.addSet = function() {
-		$scope.sets.push({weight: $scope.weight, repeats: $scope.repeats});
-		console.log('in function' + $scope.sets);
-		$scope.weight = null;
-		$scope.repeats = null;
-		return $scope.sets
-	};
-
-	$scope.submit = function() {
-		var set = {};
-		set['date'] = $scope.day;
-		set['user'] = $rootScope.user_id;
-		set['exercise'] = $scope.exercise.exercise_id
-		Sets.save({add:set}).$promise.then(function(data) {
-			set_id = data.set;
-			console.log('id => ' + data.set);
-		}).then(function(data) {
-			var repeat = {};
-			repeat['set'] = set_id;
-			repeat['repeats'] = $scope.sets;
-			Repeats.save({add:repeat});
-		})
 	};
 }]);
 

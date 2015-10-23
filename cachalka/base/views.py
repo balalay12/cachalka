@@ -89,32 +89,17 @@ class Base(View):
     def create(self, request):
         if self.create_form_class is None:
             self.failed_response(405)
-        print('create data =>', self.data['add'])
-        #############################################
-        # TODO: i guess this shit need reworking
-        if self.data['add'].get('repeats'):
-            repeats = self.data['add'].get('repeats')
-            set = self.data['add'].get('set')
-            for repeat in repeats:
-                repeat['set'] = set
-                form = self.create_form_class(repeat)
-                if form.is_valid():
-                    form.save(commit=True)
-                else:
-                    self.failed_response(405)
-            return HttpResponse()
-        ##################################################
-        else:
-            form = self.create_form_class(self.data['add'])
-            if form.is_valid():
-                instance = form.save(commit=True)
-                if self.return_last_id:
-                    last_set_id = {'set': instance.id}
-                    return self.success_response(last_set_id)
-                else:
-                    return HttpResponse()
+        print self.data
+        form = self.create_form_class(self.data['add'])
+        if form.is_valid():
+            instance = form.save(commit=True)
+            if self.return_last_id:
+                last_set_id = {'set': instance.id}
+                return self.success_response(last_set_id)
             else:
-                self.failed_response(405)
+                return HttpResponse()
+        else:
+            self.failed_response(405)
 
     def update(self, request):
         if self.update_form_class is None or not self.object_id:
@@ -208,9 +193,9 @@ class Main(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Main, self).get_context_data(**kwargs)
         if self.request.user.is_authenticated():
-            context['user'] = self.request.user.username
-        else:
-            context['user'] = u'этот гавнюк не авторизован'
+            context['user_id'] = self.request.user.id
+        # else:
+        #     context['user'] = u'этот гавнюк не авторизован'
         return context
 
 
