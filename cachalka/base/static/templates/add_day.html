@@ -6,7 +6,8 @@
 		<form class="form-horizontal well" name="add_day_form" novalidate>
 		<fieldset>
 			<div class="form-group">
-				<input type="date" class="form-control" datepicker-popup ng-model="date" is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+				<label for="date">Выберите дату</label>
+				<input id="date" type="date" class="form-control" datepicker-popup ng-model="date" is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
 				<!--<span class="input-group-btn">-->
 					<!--<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>-->
 				<!--</span>-->
@@ -26,6 +27,7 @@
 						</tr>
 					</tbody>
 				</table>
+				<input type="button" class="btn btn-success pull-right" ng-click="submit()" value="Добавить"/>
 			</div>
 			<hr/>
 			<div class="form-group" ng-show="date">
@@ -70,7 +72,7 @@
 				</div>
 				<div class="form_group" >
 					<div class="col-sm-12" ng-if="sets.length > 0">
-						<input type="button" class="btn btn-success pull-right" ng-click="addExercise()" value="Добавить"/>
+						<input type="button" class="btn btn-success pull-right" ng-click="addExercise()" value="Добавить упражнение"/>
 					</div>
 				</div>
 			</div>

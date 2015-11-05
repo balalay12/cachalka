@@ -63,6 +63,10 @@ app.factory('Repeats', ['$resource', function($resource) {
 	return $resource('/api/repeats/');
 }]);
 
+app.factory('AddDay', ['$resource', function($resource) {
+	return $resource('/api/addtraining/');
+}]);
+
 app.controller('MainController', ['$rootScope', '$scope', '$http', '$location', '$log', '$modal', 'Sets', function($rootScope, $scope, $http, $location, $log, $modal, Sets) {
 	// Check user authorization
 	$http.post('api/check/auth/')
@@ -91,7 +95,7 @@ app.controller('MainController', ['$rootScope', '$scope', '$http', '$location', 
 	};
 }]);
 
-app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', function($scope, $rootScope, Categories, Exercises, Sets, Repeats, $addExerciseModal) {
+app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', 'AddDay', function($scope, $rootScope, Categories, Exercises, Sets, Repeats, AddDay, $addExerciseModal) {
 	$scope.day = $rootScope.date;
 	Categories.query(function(data) {
 		$scope.categories = data;
@@ -116,23 +120,13 @@ app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', '
 	};
 
 	$scope.submit = function() {
-		var set = {};
-		set['date'] = $scope.day;
-		set['user'] = user_id;
-		set['exercise'] = $scope.exercise.exercise_id
-		Sets.save({add:set}).$promise.then(function(data) {
-			set_id = data.set;
-			console.log('id => ' + data.set);
-		}).then(function(data) {
-			for(var i=0;i<$scope.sets.length;i++) {
-				$scope.sets[i]['set'] = set_id
-				Repeats.save({add:$scope.sets[i]});
-			}
-		})
+		var set = [];
+		set.push({'date':$scope.day, 'user':user_id, 'exercise':$scope.exercise.exercise_id, 'repeats': $scope.sets});
+		AddDay.save({add:set});
 	};
 }]);
 
-app.controller('AddDayTrainingController', ['$scope', 'Categories', 'Exercises', function($scope, Categories, Exercises, $addDayTraining) {
+app.controller('AddDayTrainingController', ['$scope', '$http', 'Categories', 'Exercises', 'AddDay', '$filter', function($scope, $http, Categories, Exercises, AddDay, $filter, $addDayTraining) {
 	Categories.query(function(data) {
 		$scope.categories = data;
 		console.log(data);
@@ -157,10 +151,14 @@ app.controller('AddDayTrainingController', ['$scope', 'Categories', 'Exercises',
 
 	$scope.training = [];
 	$scope.addExercise = function() {
-		$scope.training.push({date:$scope.date, user: user_id, exercise: $scope.exercise.exercise_id, exercise_name: $scope.exercise.name, repeats: $scope.sets});
+		$scope.training.push({date:$filter('date')($scope.date, 'yyyy-MM-dd'), exercise: $scope.exercise.exercise_id, exercise_name: $scope.exercise.name, repeats: $scope.sets, user: user_id});
 		$scope.exercise = null;
 		$scope.sets = [];
+	};
+
+	$scope.submit = function() {
 		console.log($scope.training);
+		AddDay.save({add: $scope.training});
 	};
 
 	// Calendar

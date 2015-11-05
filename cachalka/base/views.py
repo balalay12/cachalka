@@ -90,6 +90,7 @@ class Base(View):
         if self.create_form_class is None:
             self.failed_response(405)
         print self.data
+        # попробовать переделать все по формсеты???
         form = self.create_form_class(self.data['add'])
         if form.is_valid():
             instance = form.save(commit=True)
@@ -212,7 +213,6 @@ class Sets(Base):
     serializer = SetsByDateSerializer()
     create_form_class = SetForm
     by_user = True
-    return_last_id = True
 
     def get(self, request):
         return self.read(request)
@@ -221,6 +221,7 @@ class Sets(Base):
         if self.object_id:
             return self.update(request)
         else:
+            self.return_last_id = True
             return self.create(request)
 
     def get_collection(self):
@@ -246,6 +247,25 @@ class Categories(Base):
 
     def get(self, request):
         return self.read(request)
+
+
+class AddTraining(Base):
+    def post(self, request):
+        return self.create(request)
+
+    def create(self, request):
+        data_add = self.data['add']
+        print data_add
+        for data in data_add:
+            form_set = SetForm(data)
+            if form_set.is_valid():
+                instance = form_set.save(commit=True)
+                for repeats in data['repeats']:
+                    repeats['set'] = instance.id
+                    form_repeats = RepeatsForm(repeats)
+                    if form_repeats.is_valid():
+                        form_repeats.save()
+        return HttpResponse()
 
 
 class CheckReg(View):
