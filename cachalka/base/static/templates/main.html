@@ -4,22 +4,25 @@
     </div>
     <div class="col-md-9">
         <div ng-repeat="(date, items) in sets" class="panel panel-default"> 
-            <div class="panel-heading">{$ date | date: 'dd.MM.yyyy' $} <button class="btn btn-primary btn-xs pull-right" ng-click="addExercise(date)">+ добавить упражнение</button></div>
+            <div class="panel-heading">{$ date | date: 'dd.MM.yyyy' $}
+                <!--<button class="btn btn-primary btn-xs pull-right" ng-click="addExercise(date)">+ добавить упражнение</button>-->
+                <a class="btn btn-primary btn-xs pull-right" ng-click="dayLocation(date)">изменить</a>
+            </div>
             <div class="panel-body">
                 <div ng-repeat="set in items">
-                    <h4>{$ set.items.exercise_name $}</h4>
-                    <table class="table table-striped table-hover ">
+                    <span class="inline">{$ set.items.exercise_name $}</span>
+                    <table class="table table-striped table-hover table-bordered">
                         <tbody>
                             <tr>
                                 <th>Вес</th>
-                                <th ng-repeat="(weight, repeats) in set.items.repeats">
-                                    {$ weight $}
+                                <th ng-repeat="rep in set.items.repeats">
+                                    {$ rep.weight $}
                                 </th>
                             </tr>
                             <tr>
                                 <th>Повторения</th>
-                                <th ng-repeat="(weight, repeats) in set.items.repeats">
-                                    {$ repeats $}
+                                <th ng-repeat="rep in set.items.repeats">
+                                    {$ rep.repeats $}
                                 </th>
                             </tr>
                         </tbody>

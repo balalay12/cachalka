@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
 from .models import Exercises, Sets, Categories, Repeats
-from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer
+from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer
 from .forms import SetForm, RepeatsForm
 
 class Registration(View):
@@ -114,8 +114,7 @@ class Base(View):
             form.save()
             return HttpResponse()
         else:
-            # TODO: make validation error
-            pass
+            print('form not valid')
 
     def remove(self, request):
         if not self.object_id:
@@ -130,10 +129,11 @@ class Base(View):
         _data = {}
         for k in self.request.GET:
             _data[k] = self.request.GET[k]
+            print("GET -> {0}".format(_data))
         if self.request.method.upper() == 'POST':
             try:
                 data = json.loads(self.request.body)
-                print("data {0}".format(data))
+                print("POST -> {0}".format(data))
             except ValueError:
                 pass
             else:
@@ -148,6 +148,11 @@ class Base(View):
     @property
     def category_id(self):
         return self.data.get('category_id')
+
+    @property
+    def date_train(self):
+        print 'date train func'
+        return self.data.get('date_train')
     
     def get_single_item(self):
         try:
@@ -156,6 +161,7 @@ class Base(View):
         except AssertionError:
             return self.failed_response(404)
         out_data = self.serialize_qs(qs)
+        print('single item - {0}'.format(out_data))
         return self.success_response(out_data)
 
     def get_collection(self):
@@ -164,6 +170,7 @@ class Base(View):
         else:
             qs = self.get_queryset()
         out_data = self.serialize_qs(qs)
+        print('collection - {0}'.format(out_data))
         return self.success_response(out_data)
 
     # get all objects from database
@@ -212,12 +219,14 @@ class Sets(Base):
     model = Sets
     serializer = SetsByDateSerializer()
     create_form_class = SetForm
+    update_form_class = SetForm
     by_user = True
 
     def get(self, request):
         return self.read(request)
 
     def post(self, request):
+        print('obj id -> {0}'.format(self.object_id))
         if self.object_id:
             return self.update(request)
         else:
@@ -225,7 +234,10 @@ class Sets(Base):
             return self.create(request)
 
     def get_collection(self):
-        qs = self.get_queryset()
+        if self.date_train:
+            qs = self.get_queryset().filter(date=self.date_train)
+        else:
+            qs = self.get_queryset()
         data = self.serialize_qs(qs)
         out_data = defaultdict(list)
         for item in data:
@@ -235,10 +247,21 @@ class Sets(Base):
 
 class Repeats(Base):
     model = Repeats
+    serializer = RepeatsSerializer()
     create_form_class = RepeatsForm
+    update_form_class = RepeatsForm
+
+    def get(self, request):
+        return self.read(request)
 
     def post(self, request):
-        return self.create(request)
+        if self.object_id:
+            return self.update(request)
+        else:
+            return self.create(request)
+
+    def delete(self, request):
+        return self.remove(request)
 
 
 class Categories(Base):
