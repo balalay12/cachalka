@@ -14,6 +14,7 @@ from .models import Exercises, Sets, Categories, Repeats
 from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer
 from .forms import SetForm, RepeatsForm
 
+
 class Registration(View):
     def post(self, request):
         errors = dict()
@@ -22,13 +23,14 @@ class Registration(View):
             return HttpResponse(json.dumps(errors), status='403')
         else:
             in_data = json.loads(request.body)
+            print in_data
             data = in_data['reg']
             try:
                 u = User.objects.create_user(data['name'], data['email'], data['password'])
                 u.save()
             except Exception as e:
                 errors[type(e)] = e.message
-                return HttpResponse(json.dumps(errors), status='404')
+                return HttpResponse(json.dumps(str(errors)), status='404')
             return HttpResponse(status='200')
 
 
@@ -90,7 +92,6 @@ class Base(View):
         if self.create_form_class is None:
             self.failed_response(405)
         print self.data
-        # попробовать переделать все по формсеты???
         form = self.create_form_class(self.data['add'])
         if form.is_valid():
             instance = form.save(commit=True)
