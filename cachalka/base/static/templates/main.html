@@ -3,9 +3,8 @@
         <button type="button" class="btn btn-success btn-block" ng-click="addDayTraining()">Добавить</button>
     </div>
     <div class="col-md-9">
-        <div ng-repeat="(date, items) in sets" class="panel panel-default"> 
+        <div ng-repeat="(date, items) in sets" class="panel panel-default">
             <div class="panel-heading">{$ date | date: 'dd.MM.yyyy' $}
-                <!--<button class="btn btn-primary btn-xs pull-right" ng-click="addExercise(date)">+ добавить упражнение</button>-->
                 <a class="btn btn-primary btn-xs pull-right" ng-click="dayLocation(date)">изменить</a>
             </div>
             <div class="panel-body">

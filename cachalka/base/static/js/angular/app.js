@@ -104,24 +104,25 @@ app.controller('MainController', [
 	}
 }]);
 
-app.controller('DayController', ['$scope', '$rootScope', '$http', '$location', '$routeParams', '$modal', 'Sets', function($scope, $rootScope, $http, $location, $routeParams, $modal, Sets) {
+app.controller('DayController', [
+				'$scope', '$rootScope', '$http', '$location', '$routeParams', '$modal', 'Sets',
+				function($scope, $rootScope, $http, $location, $routeParams, $modal, Sets
+){
 	// Check user authorization
 	$http.post('api/check/auth/')
 	.error(function(data, status) {
 		$location.path('/login/')
 	});
 
-	$scope.allRepeats = function() {
+	$scope.allSets = function() {
 		Sets.getAllSets({date_train: $routeParams.date}, function(data) {
-			console.log(data);
 			$scope.sets = data;
 		});
 	};
-	$scope.allRepeats();
+	$scope.allSets();
 
-	$scope.$on('repeatAdded', function() {
-		console.log('rootScope even RepeatsAdded');
-		$scope.allRepeats();
+	$scope.$on('setsChange', function() {
+		$scope.allSets();
 	});
 
 	$scope.addExercise = function(_date) {
@@ -157,7 +158,10 @@ app.controller('DayController', ['$scope', '$rootScope', '$http', '$location', '
 	}
 }]);
 
-app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', 'AddDay', function($scope, $rootScope, Categories, Exercises, Sets, Repeats, AddDay, $addExerciseModal) {
+app.controller('AddExerciseController', [
+				'$scope', '$rootScope', 'Categories', 'Exercises', 'Sets', 'Repeats', 'AddDay', '$modalInstance',
+				function($scope, $rootScope, Categories, Exercises, Sets, Repeats, AddDay, $modalInstance
+){
 	$scope.day = $rootScope.date;
 	Categories.query(function(data) {
 		$scope.categories = data;
@@ -184,11 +188,17 @@ app.controller('AddExerciseController', ['$scope', '$rootScope', 'Categories', '
 	$scope.submit = function() {
 		var set = [];
 		set.push({'date':$scope.day, 'user':user_id, 'exercise':$scope.exercise.exercise_id, 'repeats': $scope.sets});
-		AddDay.save({add:set});
+		AddDay.save({add:set}, function() {
+			$rootScope.$broadcast('setsChange');
+			$modalInstance.close();
+		});
 	};
 }]);
 
-app.controller('AddRepeatController', ['$scope', '$rootScope', 'Repeats', '$modalInstance', function($scope, $rootScope, Repeats, $modalInstance) {
+app.controller('AddRepeatController', [
+				'$scope', '$rootScope', 'Repeats', '$modalInstance',
+				function($scope, $rootScope, Repeats, $modalInstance
+){
 	$scope.cancel = function() {
 		$modalInstance.close();
 	};
@@ -197,27 +207,46 @@ app.controller('AddRepeatController', ['$scope', '$rootScope', 'Repeats', '$moda
 		$scope.set['set'] = $rootScope.AddRepeatSetId;
 		console.log($scope.set);
  		Repeats.save({add:$scope.set}, function() {
- 			$rootScope.$broadcast('repeatAdded');
+ 			$rootScope.$broadcast('setsChange');
 			$modalInstance.close();
  		});
 	};
 }]);
 
-app.controller('EditRepeatController', ['$scope', '$rootScope', 'Repeats', function($scope, $rootScope, Repeats) {
+app.controller('EditRepeatController', [
+				'$scope', '$rootScope', 'Repeats', '$modalInstance',
+				function($scope, $rootScope, Repeats, $modalInstance
+){
 	Repeats.query({id: $rootScope.editRepeatId}, function(data) {
 		$scope.set = data[0];
 	});
 
+	$scope.cancel = function() {
+		$modalInstance.close();
+	};
+
+	$scope.editEvent = function() {
+		$rootScope.$broadcast('setsChange');
+		$scope.cancel();
+	}
+
 	$scope.submit = function() {
-		Repeats.save({update:$scope.set, id:$rootScope.editRepeatId});
+		Repeats.save({update:$scope.set, id:$rootScope.editRepeatId}, function(){
+			$scope.editEvent();
+		});
 	};
 
 	$scope.delete = function() {
-		Repeats.delete({id:$rootScope.editRepeatId});
+		Repeats.delete({id:$rootScope.editRepeatId}, function() {
+			$scope.editEvent();
+		});
 	};
 }]);
 
-app.controller('EditExerciseController', ['$scope', '$rootScope', '$filter', 'Sets', 'Categories', 'Exercises', function($scope, $rootScope, $filter, Sets, Categories, Exercises, $editExercise) {
+app.controller('EditExerciseController', [
+				'$scope', '$rootScope', '$filter', 'Sets', 'Categories', 'Exercises', '$modalInstance',
+				function($scope, $rootScope, $filter, Sets, Categories, Exercises, $modalInstance
+){
 	Categories.query(function(data) {
 		$scope.categories = data;
 		console.log(data);
@@ -237,9 +266,16 @@ app.controller('EditExerciseController', ['$scope', '$rootScope', '$filter', 'Se
 		}
 	});
 
+	$scope.cancel = function() {
+		$modalInstance.close();
+	};
+
 	$scope.submit = function() {
 		var upd_exercise = {'date': $filter('date')($scope.date, 'yyyy-MM-dd'), 'exercise': $scope.exercise.exercise_id, 'user': user_id };
-		Sets.save({update:upd_exercise, id: $rootScope.editSetId,});
+		Sets.save({update:upd_exercise, id: $rootScope.editSetId,}, function() {
+			$rootScope.$broadcast('setsChange');
+			$scope.cancel();
+		});
 	}
 
 	// Calendar

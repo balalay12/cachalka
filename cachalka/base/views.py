@@ -23,7 +23,6 @@ class Registration(View):
             return HttpResponse(json.dumps(errors), status='403')
         else:
             in_data = json.loads(request.body)
-            print in_data
             data = in_data['reg']
             try:
                 u = User.objects.create_user(data['name'], data['email'], data['password'])
@@ -305,7 +304,6 @@ class CheckReg(View):
                 print v
                 return HttpResponse(status='200')
             return HttpResponse(status='404')
-        # return HttpResponse(status='404')
 
 
 class CheckAuth(View):
