@@ -185,12 +185,16 @@ app.controller('AddExerciseController', [
 		return $scope.sets
 	};
 
+	$scope.cancel = function() {
+	    $modalInstance.close();
+	};
+
 	$scope.submit = function() {
 		var set = [];
 		set.push({'date':$scope.day, 'user':user_id, 'exercise':$scope.exercise.exercise_id, 'repeats': $scope.sets});
 		AddDay.save({add:set}, function() {
 			$rootScope.$broadcast('setsChange');
-			$modalInstance.close();
+			$scope.cancel();
 		});
 	};
 }]);
@@ -270,11 +274,21 @@ app.controller('EditExerciseController', [
 		$modalInstance.close();
 	};
 
+	$scope.event = function() {
+	    $rootScope.$broadcast('setsChange');
+	    $scope.cancel();
+	}
+
+	$scope.delete = function() {
+	    Sets.delete({id: $rootScope.editSetId}, function() {
+	        $scope.event();
+	    })
+	};
+
 	$scope.submit = function() {
 		var upd_exercise = {'date': $filter('date')($scope.date, 'yyyy-MM-dd'), 'exercise': $scope.exercise.exercise_id, 'user': user_id };
 		Sets.save({update:upd_exercise, id: $rootScope.editSetId,}, function() {
-			$rootScope.$broadcast('setsChange');
-			$scope.cancel();
+			$scope.event();
 		});
 	}
 

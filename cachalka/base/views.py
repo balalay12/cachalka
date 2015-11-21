@@ -46,7 +46,7 @@ class LogIn(View):
             try:
                 User.objects.get(username=data['name'])
             except ObjectDoesNotExist:
-                errors['error'] = u'Пальзователь с таким именем не найден'
+                errors['error'] = u'Пользователь с таким именем не найден'
                 return HttpResponse(json.dumps(errors), status='404')
             user = authenticate(username=data['name'], password=data['password'])
             if user is None:
@@ -232,6 +232,9 @@ class Sets(Base):
         else:
             self.return_last_id = True
             return self.create(request)
+
+    def delete(self, request):
+        return self.remove(request);
 
     def get_collection(self):
         if self.date_train:
