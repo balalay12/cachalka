@@ -3,6 +3,12 @@
         <button type="button" class="btn btn-success btn-block" ng-click="addDayTraining()">Добавить</button>
     </div>
     <div class="col-md-9">
+        <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-primary btn-xs" ng-click="monthDecrement()"><< прошлый месяц</a>
+            <a class="btn btn-primary btn-xs pull-right" ng-click="monthIncrement()">следующий месяц >></a>
+        </div>
+            </div>
         <div ng-repeat="(date, items) in sets" class="panel panel-default">
             <div class="panel-heading">{$ date | date: 'dd.MM.yyyy' $}
                 <a class="btn btn-primary btn-xs pull-right" ng-click="dayLocation(date)">изменить</a>

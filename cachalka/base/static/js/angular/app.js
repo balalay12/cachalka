@@ -90,7 +90,49 @@ app.controller('MainController', [
 
 	$scope.$on('dayAdded', function() {
 		$scope.allSets();
-	})
+	});
+
+    var myDate = new Date();
+	$scope.month = myDate.getMonth() + 1;
+	console.log($scope.month);
+	$scope.year = myDate.getFullYear();
+	console.log($scope.year);
+
+	var getSetsByDate = function(_month, _year) {
+//	    var _data = [];
+//	    _data.push({month: _month, year: _year})
+	    Sets.getAllSets({month:_month, year: _year}, function(data) {
+            $scope.sets = data;
+        });
+	};
+
+	$scope.monthIncrement = function() {
+	    if($scope.month >= 12) {
+	        $scope.month = 1;
+	        $scope.year = $scope.year + 1;
+	        console.log($scope.year);
+	        console.log($scope.month);
+	        getSetsByDate($scope.month, $scope.year)
+	    } else {
+	        $scope.month = $scope.month + 1;
+	        console.log($scope.month);
+	        getSetsByDate($scope.month, $scope.year)
+        }
+	};
+
+	$scope.monthDecrement = function() {
+	    if($scope.month <= 1) {
+	        $scope.month = 12;
+	        $scope.year = $scope.year - 1;
+	        console.log($scope.year);
+	        console.log($scope.month);
+	        getSetsByDate($scope.month, $scope.year)
+	    } else {
+	        $scope.month = $scope.month - 1;
+	        console.log($scope.month);
+	        getSetsByDate($scope.month, $scope.year)
+        }
+	};
 
 	$scope.addDayTraining = function() {
 		var addDayTraining = $modal.open({

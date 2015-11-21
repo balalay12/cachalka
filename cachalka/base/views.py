@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import datetime
 
 from django.template import Context
 from django.http import HttpResponse
@@ -148,11 +149,6 @@ class Base(View):
     @property
     def category_id(self):
         return self.data.get('category_id')
-
-    @property
-    def date_train(self):
-        print 'date train func'
-        return self.data.get('date_train')
     
     def get_single_item(self):
         try:
@@ -234,13 +230,28 @@ class Sets(Base):
             return self.create(request)
 
     def delete(self, request):
-        return self.remove(request);
+        return self.remove(request)
+
+    @property
+    def date_train(self):
+        return self.data.get('date_train')
+
+    @property
+    def sets_month(self):
+        return self.data.get('month')
+
+    @property
+    def sets_year(self):
+        return self.data.get('year')
 
     def get_collection(self):
         if self.date_train:
             qs = self.get_queryset().filter(date=self.date_train)
         else:
-            qs = self.get_queryset()
+            if self.sets_month and self.sets_year:
+                qs = self.get_queryset().filter(date__month=self.sets_month, date__year=self.sets_year)
+            else:
+                qs = self.get_queryset().filter(date__month=get_month(), date__year=get_year())
         data = self.serialize_qs(qs)
         out_data = defaultdict(list)
         for item in data:
@@ -315,3 +326,12 @@ class CheckAuth(View):
             return HttpResponse(status='200')
         else:
             return HttpResponse(status='401')
+
+
+def get_month():
+    now_date = datetime.date.today()
+    return now_date.month
+
+def get_year():
+    now_date = datetime.date.today()
+    return now_date.year
