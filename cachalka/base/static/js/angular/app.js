@@ -32,6 +32,10 @@ app.config(function($routeProvider, $locationProvider) {
 		templateUrl: template_dirs + '/diary.html',
 		controller: 'DiaryController'
 	});
+	$routeProvider.when('/profile/', {
+		templateUrl: template_dirs + '/profile.html',
+		controller: 'ProfileController'
+	});
 	$routeProvider.when('/trainday/', {
 		templateUrl: template_dirs + '/day.html',
 		controller: 'DayController'
@@ -75,6 +79,26 @@ app.factory('AddDay', ['$resource', function($resource) {
 	return $resource('/api/addtraining/');
 }]);
 
+app.factory('UserProfile', ['$resource', function($resource) {
+	return $resource('/api/profile/');
+}])
+
+app.controller('ProfileController', [
+				'$scope', '$http', 'UserProfile',
+				function($scope, $http, UserProfile)
+{
+	// Check user authorization
+	$http.post('api/check/auth/')
+	.error(function(data, status) {
+		$location.path('/login/')
+	});
+
+	UserProfile.query({id:user_id}, function(data) {
+		console.log(data[0]);
+		$scope.user = data[0];
+	});
+}]);
+
 app.controller('NavController', [
 				'$scope', '$location', '$http',
 				function($scope, $location, $http)
@@ -86,7 +110,6 @@ app.controller('NavController', [
 	// Check user authorization
 	$http.post('api/check/auth/')
 	.success(function() {
-		console.log('ok')
 		viewItems(true);
 	})
 	.error(function() {

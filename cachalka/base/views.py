@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
 from .models import Exercises, Sets, Categories, Repeats
-from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer
+from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer, ProfileSerializer
 from .forms import SetForm, RepeatsForm
 
 
@@ -303,6 +303,17 @@ class AddTraining(Base):
                     if form_repeats.is_valid():
                         form_repeats.save()
         return HttpResponse()
+
+
+class Profile(Base):
+    model = User
+    serializer = ProfileSerializer()
+
+    def get(self, request):
+        return self.read(request)
+
+    def get_queryset(self):
+        return self.model.objects.all().filter(pk=self.request.user.id)
 
 
 class CheckReg(View):

@@ -43,3 +43,16 @@ class CategoriesSerializer(Serializer):
     def end_object(self, obj):
         self._current['category_id'] = obj.id
         self.objects.append(self._current)
+
+
+class ProfileSerializer(Serializer):
+    def end_object(self, obj):
+        del self._current['last_login']
+        self._current['date_joined'] = obj.date_joined.strftime("%Y-%m-%d")
+        del self._current['is_active']
+        del self._current['is_superuser']
+        del self._current['is_staff']
+        del self._current['groups']
+        del self._current['user_permissions']
+        del self._current['password']
+        self.objects.append(self._current)

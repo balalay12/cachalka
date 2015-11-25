@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^api/repeats/$', views.Repeats.as_view(), name='repeats'),
     url(r'^api/categories/$', views.Categories.as_view(), name='categories'),
     url(r'^api/addtraining/$', views.AddTraining.as_view(), name='add_training'),
+    url(r'^api/profile/$', views.Profile.as_view(), name='profile'),
     url(r'^api/check/$', views.CheckReg.as_view(), name='check'),
     url(r'^api/check/auth/$', views.CheckAuth.as_view(), name='auth')
 ]
