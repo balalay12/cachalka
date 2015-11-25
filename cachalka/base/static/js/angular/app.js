@@ -28,6 +28,10 @@ app.config(function($routeProvider, $locationProvider) {
 		templateUrl: template_dirs + '/main.html',
 //		controller: 'MainController'
 	});
+	$routeProvider.when('/diary/', {
+		templateUrl: template_dirs + '/diary.html',
+		controller: 'DiaryController'
+	});
 	$routeProvider.when('/trainday/', {
 		templateUrl: template_dirs + '/day.html',
 		controller: 'DayController'
@@ -71,7 +75,35 @@ app.factory('AddDay', ['$resource', function($resource) {
 	return $resource('/api/addtraining/');
 }]);
 
-app.controller('MainController', [
+app.controller('NavController', [
+				'$scope', '$location', '$http',
+				function($scope, $location, $http)
+{
+	var viewItems = function(bool) {
+		$scope.auth = bool;
+	}
+
+	// Check user authorization
+	$http.post('api/check/auth/')
+	.success(function() {
+		console.log('ok')
+		viewItems(true);
+	})
+	.error(function() {
+		console.l
+		viewItems(false);
+	});
+
+	$scope.$on('userIn', function() {
+		viewItems(true);
+	});
+
+	$scope.$on('userOut', function() {
+		viewItems(false);
+	});
+}]);
+
+app.controller('DiaryController', [
 				'$rootScope', '$scope', '$http', '$location', '$log', '$modal', 'Sets',
 				function($rootScope, $scope, $http, $location, $log, $modal, Sets
 ){
@@ -94,13 +126,9 @@ app.controller('MainController', [
 
     var myDate = new Date();
 	$scope.month = myDate.getMonth() + 1;
-	console.log($scope.month);
 	$scope.year = myDate.getFullYear();
-	console.log($scope.year);
 
 	var getSetsByDate = function(_month, _year) {
-//	    var _data = [];
-//	    _data.push({month: _month, year: _year})
 	    Sets.getAllSets({month:_month, year: _year}, function(data) {
             $scope.sets = data;
         });
@@ -110,12 +138,9 @@ app.controller('MainController', [
 	    if($scope.month >= 12) {
 	        $scope.month = 1;
 	        $scope.year = $scope.year + 1;
-	        console.log($scope.year);
-	        console.log($scope.month);
 	        getSetsByDate($scope.month, $scope.year)
 	    } else {
 	        $scope.month = $scope.month + 1;
-	        console.log($scope.month);
 	        getSetsByDate($scope.month, $scope.year)
         }
 	};
@@ -124,12 +149,9 @@ app.controller('MainController', [
 	    if($scope.month <= 1) {
 	        $scope.month = 12;
 	        $scope.year = $scope.year - 1;
-	        console.log($scope.year);
-	        console.log($scope.month);
 	        getSetsByDate($scope.month, $scope.year)
 	    } else {
 	        $scope.month = $scope.month - 1;
-	        console.log($scope.month);
 	        getSetsByDate($scope.month, $scope.year)
         }
 	};
@@ -532,12 +554,16 @@ app.controller('RegistrationController', ['$scope', '$http', '$location', '$log'
 	};
 }]);
 
-app.controller('LoginController', ['$scope', '$http', '$log', '$location', function($scope, $http, $log, $location) {
+app.controller('LoginController', [
+				'$scope', '$http', '$log', '$location', '$rootScope',
+				function($scope, $http, $log, $location, $rootScope
+) {
 	$scope.submit = function() {
 		var inData = { login: $scope.user };
 		$http.post('/login/', angular.toJson(inData))
 		.success(function(data, status) {
 			$log.debug(data);
+			$rootScope.$broadcast('userIn');
 			$location.path('#/');
 		})
 		.error(function(data, status) {
@@ -547,10 +573,14 @@ app.controller('LoginController', ['$scope', '$http', '$log', '$location', funct
 	}
 }]);
 
-app.controller('LogoutController', ['$http', '$location', '$log', function($http, $location, $log) {
+app.controller('LogoutController', [
+				'$http', '$location', '$log', '$rootScope',
+				function($http, $location, $log, $rootScope
+) {
 	$http.post('/logout/')
 		.success(function() {
 			$log.debug('logout success');
+			$rootScope.$broadcast('userOut')
 			$location.path('/');
 		})
 		.error(function() {
