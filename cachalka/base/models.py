@@ -39,7 +39,7 @@ class Sets(models.Model):
 
 class Repeats(models.Model):
     set = models.ForeignKey(Sets, default=None)
-    weight = models.IntegerField(verbose_name=u"Вес")
+    weight = models.FloatField(verbose_name=u"Вес")
     repeats = models.IntegerField(verbose_name=u'Повторы')
 
     class Meta:

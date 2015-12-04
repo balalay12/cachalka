@@ -11,8 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
-from .models import Exercises, Sets, Categories, Repeats
-from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer, ProfileSerializer
+from .models import Exercises, Sets, Categories, Repeats, BodySize
+from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer, ProfileSerializer, BodySizeSerializer
 from .forms import SetForm, RepeatsForm
 
 
@@ -314,6 +314,15 @@ class Profile(Base):
 
     def get_queryset(self):
         return self.model.objects.all().filter(pk=self.request.user.id)
+
+
+class BodySizeView(Base):
+    model = BodySize
+    serializer = BodySizeSerializer()
+    by_user = True
+
+    def get(self, request):
+        return self.read(request)
 
 
 class CheckReg(View):

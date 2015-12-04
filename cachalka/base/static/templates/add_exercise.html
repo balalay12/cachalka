@@ -21,10 +21,10 @@
 			</div>
 			<div class="row" ng-show="exercise">
 				<div class="col-md-5">
-					<input class="form-control input-group-md" type="number" ng-model="weight" placeholder="Вес" required />
+					<input class="form-control input-group-md" type="number" ng-model="weight" min="1" placeholder="Вес" required />
 				</div>
 				<div class="col-md-5">
-					<input class="form-control input-group-md" type="number" ng-model="repeats" placeholder="Повторения" required />
+					<input class="form-control input-group-md" type="number" ng-model="repeats" min="1" placeholder="Повторения" required />
 				</div>
 				<div class="col-md-2">
 					<input class="form-control btn btn-success" type="button" value="+" ng-click="addSet()" ng-disabled="add_exercise_form.$invalid" />

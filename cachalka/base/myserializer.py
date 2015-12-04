@@ -56,3 +56,9 @@ class ProfileSerializer(Serializer):
         del self._current['user_permissions']
         del self._current['password']
         self.objects.append(self._current)
+
+
+class BodySizeSerializer(Serializer):
+    def end_object(self, obj):
+        self._current['date'] = obj.date.strftime("%Y-%m-%d")
+        self.objects.append(self._current)
