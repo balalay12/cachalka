@@ -81,11 +81,15 @@ app.factory('AddDay', ['$resource', function($resource) {
 
 app.factory('UserProfile', ['$resource', function($resource) {
 	return $resource('/api/profile/');
-}])
+}]);
+
+app.factory('BodySize', ['$resource', function($resource) {
+    return $resource('/api/bodysize/');
+}]);
 
 app.controller('ProfileController', [
-				'$scope', '$http', 'UserProfile',
-				function($scope, $http, UserProfile)
+				'$scope', '$http', 'UserProfile', 'BodySize',
+				function($scope, $http, UserProfile, BodySize)
 {
 	// Check user authorization
 	$http.post('api/check/auth/')
@@ -97,6 +101,11 @@ app.controller('ProfileController', [
 		console.log(data[0]);
 		$scope.user = data[0];
 	});
+
+	BodySize.query(function(data) {
+	    console.log(data);
+	    $scope.bodySize = data;
+	})
 }]);
 
 app.controller('NavController', [

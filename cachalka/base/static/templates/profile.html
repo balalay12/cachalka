@@ -1,8 +1,31 @@
 <div class="col-md-12">
-    <h3>Профиль ползователя</h3>
+    <h3>Профиль пользователя</h3>
     Ник: {$ user.username $} <br/>
     Имя: {$ user.first_name $} <br/>
     Фамилия: {$ user.last_name $} <br/>
     Эл. почка: {$ user.email $} <br/>
     Дата регистрации: {$ user.date_joined | date: 'dd.MM.yyyy' $} <br/>
+    <hr>
+    <div>
+        <table class="table table-striped table-bordered table-condensed table-responsive">
+            <tbody>
+                <tr>
+                    <th>Дата</th>
+                    <th>Вес</th>
+                    <th>Грудь</th>
+                    <th>Талия</th>
+                    <th>Бедра</th>
+                    <th>Руки</th>
+                </tr>
+                <tr ng-repeat="size in bodySize">
+                    <th>{$ size.date | date: 'dd.MM.yyyy' $}</th>
+                    <th>{$ size.weight $}</th>
+                    <th>{$ size.chest $}</th>
+                    <th>{$ size.waist $}</th>
+                    <th>{$ size.hip $}</th>
+                    <th>{$ size.arm $}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
