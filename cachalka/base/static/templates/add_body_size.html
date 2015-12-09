@@ -1,0 +1,56 @@
+<div>
+	<div class="modal-header">
+		Добавить упражнение
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal well" name="add_bodySize_form" novalidate>
+			<fieldset>
+				<div class="form-group">
+                    <label for="date">Дата замеров</label>
+                    <div class="input-group">
+					    <input id="date" type="date" class="form-control" datepicker-popup ng-model="bodySize.date" is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" required ng-required="true" close-text="Close" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+				</div>
+                <div ng-if="bodySize.date">
+                    <div class="form-group">
+                        <label for="chest" class="control-label">Грудь</label>
+                        <div>
+                            <input class="form-control input-sm" type="number" id="chest" min="1" name="repeats" ng-model="bodySize.chest" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="waist" class="control-label">Талия</label>
+                        <div>
+                            <input class="form-control input-sm" type="number" id="waist" min="1" name="repeats" ng-model="bodySize.waist" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="hip" class="control-label">Бедра</label>
+                        <div>
+                            <input class="form-control input-sm" type="number" id="hip" min="1" name="repeats" ng-model="bodySize.hip" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="arm" class="control-label">Руки</label>
+                        <div>
+                            <input class="form-control input-sm" type="number" id="arm" min="1" name="repeats" ng-model="bodySize.arm" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight" class="control-label">Вес</label>
+                        <div>
+                            <input class="form-control input-sm" type="number" id="weight" min="1" name="repeats" ng-model="bodySize.weight" />
+                        </div>
+                    </div>
+                </div>
+			</fieldset>
+		</form>
+	</div>
+	<div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-disabled="add_bodySize_form.$invalid" ng-click="submit()">Добавить</button>
+        <button class="btn btn-warning pull-left" type="button" ng-click="cancel()">Закрыть</button>
+	</div>
+</div>

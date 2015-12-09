@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
 from .models import Exercises, Sets, Categories, Repeats, BodySize
 from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer, ProfileSerializer, BodySizeSerializer
-from .forms import SetForm, RepeatsForm
+from .forms import SetForm, RepeatsForm, BodySizeForm
 
 
 class Registration(View):
@@ -93,7 +93,9 @@ class Base(View):
             self.failed_response(405)
         print self.data
         form = self.create_form_class(self.data['add'])
+        print 'crate 1'
         if form.is_valid():
+            print 'crate 2'
             instance = form.save(commit=True)
             if self.return_last_id:
                 last_set_id = {'set': instance.id}
@@ -319,10 +321,17 @@ class Profile(Base):
 class BodySizeView(Base):
     model = BodySize
     serializer = BodySizeSerializer()
+    create_form_class = BodySizeForm
     by_user = True
 
     def get(self, request):
         return self.read(request)
+
+    def post(self, request):
+        if self.object_id:
+            return self.update(request)
+        else:
+            return self.create(request)
 
 
 class CheckReg(View):

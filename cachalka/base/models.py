@@ -49,11 +49,11 @@ class Repeats(models.Model):
 
 class BodySize(models.Model):
     date = models.DateField(default=None, verbose_name=u'Дата замеров')
-    chest = models.FloatField(verbose_name=u'Грудь')
-    waist = models.FloatField(verbose_name=u'Талия')
-    hip = models.FloatField(verbose_name=u'Бедра')
-    arm = models.FloatField(verbose_name=u'Руки')
-    weight = models.FloatField(verbose_name=u'Вес')
+    chest = models.FloatField(verbose_name=u'Грудь', blank=True, null=True)
+    waist = models.FloatField(verbose_name=u'Талия', blank=True, null=True)
+    hip = models.FloatField(verbose_name=u'Бедра', blank=True, null=True)
+    arm = models.FloatField(verbose_name=u'Руки', blank=True, null=True)
+    weight = models.FloatField(verbose_name=u'Вес', blank=True, null=True)
     user = models.ForeignKey('auth.User')
 
     class Meta:
