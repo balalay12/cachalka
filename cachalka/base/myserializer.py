@@ -60,5 +60,6 @@ class ProfileSerializer(Serializer):
 
 class BodySizeSerializer(Serializer):
     def end_object(self, obj):
+        self._current['id'] = obj.id
         self._current['date'] = obj.date.strftime("%Y-%m-%d")
         self.objects.append(self._current)

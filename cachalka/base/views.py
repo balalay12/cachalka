@@ -322,6 +322,7 @@ class BodySizeView(Base):
     model = BodySize
     serializer = BodySizeSerializer()
     create_form_class = BodySizeForm
+    update_form_class = BodySizeForm
     by_user = True
 
     def get(self, request):
@@ -332,6 +333,9 @@ class BodySizeView(Base):
             return self.update(request)
         else:
             return self.create(request)
+
+    def delete(self, request):
+        return self.remove(request)
 
 
 class CheckReg(View):
@@ -360,6 +364,7 @@ class CheckAuth(View):
 def get_month():
     now_date = datetime.date.today()
     return now_date.month
+
 
 def get_year():
     now_date = datetime.date.today()

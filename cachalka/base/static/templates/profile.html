@@ -18,12 +18,12 @@
                 <th>Руки</th>
             </tr>
             <tr ng-repeat="size in bodySize">
-                <th>{$ size.date | date: 'dd.MM.yyyy' $}</th>
-                <th>{$ size.weight $}</th>
-                <th>{$ size.chest $}</th>
-                <th>{$ size.waist $}</th>
-                <th>{$ size.hip $}</th>
-                <th>{$ size.arm $}</th>
+                <th><a ng-click="edit(size.id)">{$ size.date | date: 'dd.MM.yyyy' $}</a></th>
+                <th><a ng-click="edit(size.id)">{$ size.weight $}</a></th>
+                <th><a ng-click="edit(size.id)">{$ size.chest $}</a></th>
+                <th><a ng-click="edit(size.id)">{$ size.waist $}</a></th>
+                <th><a ng-click="edit(size.id)">{$ size.hip $}</a></th>
+                <th><a ng-click="edit(size.id)">{$ size.arm $}</a></th>
             </tr>
         </tbody>
     </table>

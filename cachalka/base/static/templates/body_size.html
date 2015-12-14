@@ -1,6 +1,6 @@
 <div>
 	<div class="modal-header">
-		Добавить упражнение
+		{$ title $}
 	</div>
 	<div class="modal-body">
 		<form class="form-horizontal well" name="add_bodySize_form" novalidate>
@@ -50,7 +50,13 @@
 		</form>
 	</div>
 	<div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-disabled="add_bodySize_form.$invalid" ng-click="submit()">Добавить</button>
-        <button class="btn btn-warning pull-left" type="button" ng-click="cancel()">Закрыть</button>
+
+        <div class="form_group">
+            <button ng-if="adding" class="btn btn-primary" type="button" ng-disabled="add_bodySize_form.$invalid" ng-click="submit()">Добавить</button>
+            <input ng-if="!adding" type="button" class="btn btn-danger" ng-click="delete()" value="УДАЛИТЬ"/>
+            <input ng-if="!adding" type="button" class="btn btn-success pull-right" ng-click="submit()" value="Обновить"/>
+            <button class="btn btn-warning pull-left" type="button" ng-click="cancel()">Закрыть</button>
+        </div>
+
 	</div>
 </div>

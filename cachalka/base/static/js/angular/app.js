@@ -104,8 +104,10 @@ app.controller('ProfileController', [
 
 	$scope.BodySizeQuery = function() {
 	    BodySize.query(function(data) {
-            console.log(data);
             $scope.bodySize = data;
+            for(var i=0; i<$scope.bodySize.length; i++ ) {
+            	$scope.bodySize[i].date = new Date($scope.bodySize[i].date);
+            }
         });
     };
 	$scope.BodySizeQuery();
@@ -116,11 +118,119 @@ app.controller('ProfileController', [
 
 	$scope.addBodySize = function() {
 	    var addBodySizeModal = $modal.open({
-	        templateUrl: template_dirs + '/add_body_size.html',
+	        templateUrl: template_dirs + '/body_size.html',
 	        controller: 'AddBodySizeController'
 	    });
 	};
+
+	$scope.edit = function(id) {
+		$rootScope.editBodySizeId = id;
+
+		var editBodySizeModal = $modal.open({
+			templateUrl: template_dirs + '/body_size.html',
+			controller: 'EditBodySizeController'
+		});
+	};
 }]);
+
+app.controller('EditBodySizeController', [
+				'$scope', '$modalInstance', '$rootScope', 'BodySize', '$filter',
+				function($scope, $modalInstance, $rootScope, BodySize, $filter)
+{
+	$scope.adding = false;
+	$scope.title = 'Изменить замеры тела';
+
+	BodySize.query({id:$rootScope.editBodySizeId}, function(data) {
+		$scope.bodySize = data[0];
+		$scope.bodySize.date = new Date($scope.bodySize.date);
+	});
+	
+	$scope.cancel = function() {
+		$modalInstance.close();
+	};
+	$scope.delete = function() {
+		BodySize.delete({id:$scope.bodySize.id}, function() {
+			$rootScope.$broadcast('bodySizeAdded');
+			$scope.cancel();
+		})
+	};
+	$scope.submit = function() {
+		$scope.bodySize.date = $filter('date')($scope.bodySize.date, 'yyyy-MM-dd');
+		BodySize.save({update:$scope.bodySize, id:$scope.bodySize.id}, function() {
+			$rootScope.$broadcast('bodySizeAdded');
+			$scope.cancel();
+		});
+	};
+
+	// Calendar
+	$scope.today = function() {
+		$scope.dt = new Date();
+	};
+	$scope.today();
+
+	$scope.clear = function () {
+		$scope.dt = null;
+	};
+
+	// Disable weekend selection
+	//  $scope.disabled = function(date, mode) {
+	//    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
+	//  };
+
+	$scope.toggleMin = function() {
+		$scope.minDate = $scope.minDate ? null : new Date();
+	};
+	$scope.toggleMin();
+	$scope.maxDate = new Date(2020, 5, 22);
+
+	$scope.open = function($event) {
+		$scope.status.opened = true;
+	};
+
+	$scope.dateOptions = {
+		formatYear: 'yy',
+		startingDay: 7
+	};
+
+	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+	$scope.format = $scope.formats[0];
+
+	$scope.status = {
+		opened: false
+	};
+
+	var tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+	var afterTomorrow = new Date();
+	afterTomorrow.setDate(tomorrow.getDate() + 2);
+	$scope.events =
+	[
+		{
+			date: tomorrow,
+			status: 'full'
+		},
+		{
+			date: afterTomorrow,
+			status: 'partially'
+		}
+	];
+
+	$scope.getDayClass = function(date, mode) {
+		if (mode === 'day') {
+			var dayToCheck = new Date(date).setHours(0,0,0,0);
+
+			for (var i=0;i<$scope.events.length;i++){
+				var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+
+				if (dayToCheck === currentDay) {
+					return $scope.events[i].status;
+				}
+			}
+		}
+
+		return '';
+	};
+}])
 
 app.controller('AddBodySizeController', [
                 '$scope', '$modalInstance', '$filter', 'BodySize', '$rootScope',
@@ -129,6 +239,9 @@ app.controller('AddBodySizeController', [
     $scope.cancel = function() {
         $modalInstance.close();
     };
+
+    $scope.adding = true;
+    $scope.title = 'Добавить замеры тела';
 
     $scope.submit = function() {
         $scope.bodySize.date = $filter('date')($scope.bodySize.date, 'yyyy-MM-dd');
