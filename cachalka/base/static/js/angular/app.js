@@ -454,7 +454,7 @@ app.controller('DayController', [
 	$scope.addRepeat = function(set_id) {
 		$rootScope.AddRepeatSetId = set_id
 		var addRepeatModal = $modal.open({
-			templateUrl: template_dirs + '/add_repeat.html',
+			templateUrl: template_dirs + '/repeat.html',
 			controller: 'AddRepeatController'
 		})
 	};
@@ -462,7 +462,7 @@ app.controller('DayController', [
 	$scope.editRepeat = function(repeat_id) {
 		$rootScope.editRepeatId = repeat_id;
 		var editRepeatModal = $modal.open({
-			templateUrl: template_dirs + '/edit_repeat.html',
+			templateUrl: template_dirs + '/repeat.html',
 			controller: 'EditRepeatController'
 		});
 	}
@@ -513,6 +513,8 @@ app.controller('AddRepeatController', [
 				'$scope', '$rootScope', 'Repeats', '$modalInstance',
 				function($scope, $rootScope, Repeats, $modalInstance
 ){
+	$scope.adding = true;
+
 	$scope.cancel = function() {
 		$modalInstance.close();
 	};
@@ -531,6 +533,8 @@ app.controller('EditRepeatController', [
 				'$scope', '$rootScope', 'Repeats', '$modalInstance',
 				function($scope, $rootScope, Repeats, $modalInstance
 ){
+	$scope.adding = false;
+
 	Repeats.query({id: $rootScope.editRepeatId}, function(data) {
 		$scope.set = data[0];
 	});
@@ -745,9 +749,6 @@ app.controller('AddDayTrainingController', [
 		formatYear: 'yy',
 		startingDay: 7
 	};
-
-	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-	$scope.format = $scope.formats[0];
 
 	$scope.status = {
 		opened: false

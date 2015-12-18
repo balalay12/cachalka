@@ -45,16 +45,14 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="form_group" >
-					<div class="col-sm-12" ng-if="sets.length > 0">
-						<input type="button" class="btn btn-success pull-right" ng-click="submit()" value="Добавить"/>	
-					</div>
-				</div>
 			</div>
 		</fieldset>
 	</form>
 	</div>
     <div class="modal-footer">
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Закрыть</button>
+    	<span ng-if="sets.length > 0">
+    	<input type="button" class="btn btn-success" ng-click="submit()" value="Добавить"/>
+    	</span>
+        <button class="btn btn-warning pull-left" type="button" ng-click="cancel()">Закрыть</button>
 	</div>
 </div>
