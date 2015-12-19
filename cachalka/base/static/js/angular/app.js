@@ -172,15 +172,6 @@ app.controller('EditBodySizeController', [
 		$scope.dt = null;
 	};
 
-	// Disable weekend selection
-	//  $scope.disabled = function(date, mode) {
-	//    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-	//  };
-
-	$scope.toggleMin = function() {
-		$scope.minDate = $scope.minDate ? null : new Date();
-	};
-	$scope.toggleMin();
 	$scope.maxDate = new Date(2020, 5, 22);
 
 	$scope.open = function($event) {
@@ -262,15 +253,6 @@ app.controller('AddBodySizeController', [
 		$scope.dt = null;
 	};
 
-	// Disable weekend selection
-	//  $scope.disabled = function(date, mode) {
-	//    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-	//  };
-
-	$scope.toggleMin = function() {
-		$scope.minDate = $scope.minDate ? null : new Date();
-	};
-	$scope.toggleMin();
 	$scope.maxDate = new Date(2020, 5, 22);
 
 	$scope.open = function($event) {
@@ -618,15 +600,6 @@ app.controller('EditExerciseController', [
 		$scope.dt = null;
 	};
 
-	// Disable weekend selection
-	//  $scope.disabled = function(date, mode) {
-	//    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-	//  };
-
-	$scope.toggleMin = function() {
-		$scope.minDate = $scope.minDate ? null : new Date();
-	};
-	$scope.toggleMin();
 	$scope.maxDate = new Date(2020, 5, 22);
 
 	$scope.open = function($event) {
@@ -732,15 +705,6 @@ app.controller('AddDayTrainingController', [
 		$scope.dt = null;
 	};
 
-	// Disable weekend selection
-	//  $scope.disabled = function(date, mode) {
-	//    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-	//  };
-
-	$scope.toggleMin = function() {
-		$scope.minDate = $scope.minDate ? null : new Date();
-	};
-	$scope.toggleMin();
 	$scope.maxDate = new Date(2020, 5, 22);
 
 	$scope.open = function($event) {
