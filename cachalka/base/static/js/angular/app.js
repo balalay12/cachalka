@@ -514,6 +514,7 @@ app.controller('AddRepeatController', [
 				function($scope, $rootScope, Repeats, $modalInstance
 ){
 	$scope.adding = true;
+	$scope.title = 'Добавить подход';
 
 	$scope.cancel = function() {
 		$modalInstance.close();
@@ -534,6 +535,7 @@ app.controller('EditRepeatController', [
 				function($scope, $rootScope, Repeats, $modalInstance
 ){
 	$scope.adding = false;
+	$scope.title = 'Редактировать подход';
 
 	Repeats.query({id: $rootScope.editRepeatId}, function(data) {
 		$scope.set = data[0];
