@@ -1,5 +1,5 @@
 
-var app = angular.module('app', ['ngRoute', 'ngResource', 'ngCookies', 'ui.bootstrap']);
+var app = angular.module('app', ['ngRoute', 'ngResource', 'ngCookies', 'ui.bootstrap', 'chart.js']);
 
 app.run( function run( $http, $cookies ){
 	// For CSRF token compatibility with Django
@@ -131,6 +131,13 @@ app.controller('ProfileController', [
 			controller: 'EditBodySizeController'
 		});
 	};
+
+	$scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
+  $scope.series = ['Series A', 'Series B'];
+  $scope.data = [
+    [65, 59, 80, 81, 56, 55, 40],
+    [28, 48, 40, 19, 86, 27, 90]
+  ];
 }]);
 
 app.controller('EditBodySizeController', [
