@@ -88,8 +88,8 @@ app.factory('BodySize', ['$resource', function($resource) {
 }]);
 
 app.controller('ProfileController', [
-				'$scope', '$http', 'UserProfile', 'BodySize', '$modal', '$rootScope',
-				function($scope, $http, UserProfile, BodySize, $modal, $rootScope)
+				'$scope', '$http', 'UserProfile', 'BodySize', '$modal', '$rootScope', '$filter',
+				function($scope, $http, UserProfile, BodySize, $modal, $rootScope, $filter)
 {
 	// Check user authorization
 	$http.post('api/check/auth/')
@@ -102,12 +102,23 @@ app.controller('ProfileController', [
 		$scope.user = data[0];
 	});
 
+	var dates = [];
+	var weights = [];
+
 	$scope.BodySizeQuery = function() {
 	    BodySize.query(function(data) {
             $scope.bodySize = data;
+           	labels = [];
+           	data = [];
+           	data_weights = [];
             for(var i=0; i<$scope.bodySize.length; i++ ) {
             	$scope.bodySize[i].date = new Date($scope.bodySize[i].date);
+            	labels.unshift($filter('date')($scope.bodySize[i].date, 'dd.MM.yyyy'));
+            	data_weights.unshift($scope.bodySize[i].weight);
             }
+            $scope.data = [data_weights];
+            $scope.labels = labels;
+            $scope.series = ['Вес']
         });
     };
 	$scope.BodySizeQuery();
@@ -131,13 +142,6 @@ app.controller('ProfileController', [
 			controller: 'EditBodySizeController'
 		});
 	};
-
-	$scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-  $scope.series = ['Series A', 'Series B'];
-  $scope.data = [
-    [65, 59, 80, 81, 56, 55, 40],
-    [28, 48, 40, 19, 86, 27, 90]
-  ];
 }]);
 
 app.controller('EditBodySizeController', [

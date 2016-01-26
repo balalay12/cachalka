@@ -81,6 +81,7 @@ class Base(View):
     model = None
     by_user = None
     return_last_id = None
+    count = None
 
     def read(self, request):
         if self.object_id:
@@ -155,9 +156,10 @@ class Base(View):
     def get_single_item(self):
         try:
             qs = self.get_queryset().filter(pk=self.object_id)
+            print('qs length -> {0}'.format(len(qs)))
             assert len(qs) == 1
         except AssertionError:
-            return self.failed_response(404)
+            return self.failed_response(400)
         out_data = self.serialize_qs(qs)
         print('single item - {0}'.format(out_data))
         return self.success_response(out_data)
@@ -174,7 +176,10 @@ class Base(View):
     # get all objects from database
     def get_queryset(self):
         if self.by_user:
-            return self.model.objects.all().filter(user=self.request.user.id)
+            if self.count:
+                return self.model.objects.all().filter(user=self.request.user.id).order_by("-date")[:5]
+            else:
+                return self.model.objects.all().filter(user=self.request.user.id)
         else:
             return self.model.objects.all()
 
@@ -336,6 +341,14 @@ class BodySizeView(Base):
 
     def delete(self, request):
         return self.remove(request)
+
+    def read(self, request):
+        if self.object_id:
+            self.count = False
+            return self.get_single_item()
+        else:
+            self.count = True
+            return self.get_collection()
 
 
 class CheckReg(View):
