@@ -9,12 +9,13 @@ from django.views.generic import TemplateView, View
 from django.utils.functional import cached_property
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from collections import defaultdict
 from .models import Exercises, Sets, Categories, Repeats, BodySize
 from .myserializer import ExercisesSerializer, SetsByDateSerializer, CategoriesSerializer, RepeatsSerializer, ProfileSerializer, BodySizeSerializer
 from .forms import SetForm, RepeatsForm, BodySizeForm
 
+User = get_user_model()
 
 class Registration(View):
     def post(self, request):

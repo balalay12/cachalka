@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 
 class Categories(models.Model):
@@ -28,7 +30,7 @@ class Exercises(models.Model):
 
 class Sets(models.Model):
     date = models.DateField(default=None)
-    user = models.ForeignKey('auth.User')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     exercise = models.ForeignKey(Exercises)
     # repeats = models.ForeignKey(Repeats, default=None)
 
@@ -54,8 +56,13 @@ class BodySize(models.Model):
     hip = models.FloatField(verbose_name=u'Бедра', blank=True, null=True)
     arm = models.FloatField(verbose_name=u'Руки', blank=True, null=True)
     weight = models.FloatField(verbose_name=u'Вес', blank=True, null=True)
-    user = models.ForeignKey('auth.User')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     class Meta:
         verbose_name = u'Замеры тела'
         verbose_name_plural = u'Замеры тела'
+
+
+class MyUser(AbstractUser):
+    height = models.IntegerField(verbose_name=u'Рост', blank=True, null=True)
+

@@ -1,4 +1,3 @@
-
 var app = angular.module('app', ['ngRoute', 'ngResource', 'ngCookies', 'ui.bootstrap', 'chart.js']);
 
 app.run( function run( $http, $cookies ){
@@ -107,6 +106,7 @@ app.controller('ProfileController', [
 
 	$scope.BodySizeQuery = function() {
 	    BodySize.query(function(data) {
+	    console.log(data.length);
             $scope.bodySize = data;
            	labels = [];
            	data = [];
