@@ -23,7 +23,7 @@
 			</div>
 		</div>
 	</nav>-->
-	<div class="jumbotron">
+	<div class="page-header">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-9">	
@@ -32,26 +32,23 @@
 					</h1>
 					<p>ОНЛАЙН ДНЕВНИК  ДЛЯ ТРЕНИРОВОК</p>
 				</div>
-				<div class="col-md-3 text-center" ng-show="!nav.auth">
-					<a class="btn btn-info btn-lg" href="#/login">ВОЙТИ</a>
+				<div class="col-md-3 text-center" ng-show="!vm.auth">
+					<a class="btn btn-info btn-lg" ui-sref="main.login">ВОЙТИ</a>
 					<p><small>или</small></p>
-					<a href="#/reg">Зарегестрироваться</a>
+					<a ui-sref="main.registration">Зарегестрироваться</a>
 				</div>
-				<div class="col-md-3 text-center" ng-show="nav.auth">
+				<div class="col-md-3 text-center" ng-show="vm.auth">
 					<p>
-						<a class="btn btn-primary btn-lg btn-block" href="#/diary">ДНЕВНИК</a>
-						<a class="btn btn-primary btn-lg btn-block" href="#/profile">ПРОФИЛЬ</a>
+						<a class="btn btn-primary btn-lg btn-block" ui-sref="main.diary">ДНЕВНИК</a>
+						<a class="btn btn-primary btn-lg btn-block" ui-sref="main.profile">ПРОФИЛЬ</a>
 					</p>
-					<a href="#/logout"><small>ВЫХОД</small></a>
+					<a ui-sref="main.logout"><small>ВЫХОД</small></a>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="container">
 		<div class="row">
-			<div class="col-md-12">
-			    <h2>Main page</h2>
-			    <h4>Description</h4>
-			</div>
+			<ui-view></ui-view>
 		</div>
 	</div>
