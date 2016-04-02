@@ -4,7 +4,7 @@
 
 	angular
 		.module('app')
-		.controller('diaryCtrl', function($uibModal, $state, setsFactory) {
+		.controller('diaryCtrl', function($scope, $uibModal, $state, setsFactory) {
 
 			var vm = this;
 			vm.addDay = addDay;
@@ -16,14 +16,18 @@
 				setsFactory.getAllSets(function(data) {
 						vm.sets = data;
 					});
-			}
+			};
 			allSets();
+
+			$scope.$on('dayAdded', function() {
+				allSets();
+			});
 
 			var getSetsByDate = function(_month, _year) {
 				setsFactory.getAllSets({month:_month, year: _year}, function(data) {
 					vm.sets = data;
 				});
-			}
+			};
 
 			var myDate = new Date();
 			var month = myDate.getMonth() + 1;

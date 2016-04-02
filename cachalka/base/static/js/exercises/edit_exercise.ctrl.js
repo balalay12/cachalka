@@ -32,16 +32,16 @@
 
 			$scope.delete = function() {
 			    setsFactory.delete({id: $rootScope.editSetId}, function() {
-			        // $scope.event();
-			        console.log('deleted');
+					$rootScope.$broadcast('setsChanged');
+					$scope.cancel();
 			    });
 			};
 
 			$scope.submit = function() {
 				var upd_exercise = {'date': $filter('date')($scope.date, 'yyyy-MM-dd'), 'exercise': $scope.exercise.exercise_id, 'user': user_id };
-				setsFactory.save({update:upd_exercise, id: $rootScope.editSetId,}, function() {
-					// $scope.event();
-					console.log('updated');
+				setsFactory.save({update:upd_exercise, id: $rootScope.editSetId}, function() {
+					$rootScope.$broadcast('setsChanged');
+					$scope.cancel();;
 				});
 			}
 

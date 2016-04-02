@@ -4,7 +4,7 @@
 
 	angular
 		.module('app')
-		.controller('addDayCtrl', function($scope, $filter, $uibModalInstance, categoryFactory, exerciseFactory, addDayFactory) {
+		.controller('addDayCtrl', function($scope, $rootScope, $filter, $uibModalInstance, categoryFactory, exerciseFactory, addDayFactory) {
 
 			categoryFactory.categories()
 				.query(function(data) {
@@ -39,9 +39,9 @@
 			$scope.submit = function() {
 				addDayFactory.addDay()
 					.save({add: $scope.training}, function() {
-					// $rootScope.$broadcast('dayAdded');
-					$scope.cancel();
-				});
+						$rootScope.$broadcast('dayAdded');
+						$scope.cancel();
+					});
 			};
 
 			$scope.cancel = function() {

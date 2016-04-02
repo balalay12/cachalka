@@ -39,6 +39,7 @@
 				set.push({'date':$scope.day, 'user':user_id, 'exercise':$scope.exercise.exercise_id, 'repeats': $scope.sets});
 				addDayFactory.addDay()
 					.save({add:set}, function() {
+						$rootScope.$broadcast('setsChanged');
 						$scope.cancel();
 					});
 			};

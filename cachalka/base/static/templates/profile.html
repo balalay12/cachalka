@@ -3,8 +3,9 @@
     Ник: {$ user.username $} <br/>
     Имя: {$ user.first_name $} <br/>
     Фамилия: {$ user.last_name $} <br/>
-    Эл. почка: {$ user.email $} <br/>
+    Эл. почта: {$ user.email $} <br/>
     Дата регистрации: {$ user.date_joined | date: 'dd.MM.yyyy' $} <br/>
+    Вес: {$ user.height $} <br/>
     <hr>
     <h3>Замеры тела</h3>
     <button class="btn btn-primary" ng-click="addBodySize()">Добавить замеры</button>

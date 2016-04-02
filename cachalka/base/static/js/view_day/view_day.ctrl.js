@@ -4,7 +4,7 @@
 
 	angular
 		.module('app')
-		.controller('viewDayCtrl', function($rootScope,$stateParams, $uibModal, setsFactory) {
+		.controller('viewDayCtrl', function($scope, $rootScope,$stateParams, $uibModal, setsFactory) {
 
 			var vm = this;
 			vm.addExercise = addExercise;
@@ -18,6 +18,10 @@
 				});
 			}
 			allSets();
+
+			$scope.$on('setsChanged', function() {
+				allSets();
+			});
 
 			function addExercise(_date) {
 				$rootScope.addExercieDate = _date;
@@ -47,7 +51,7 @@
 				$rootScope.editRepeatId = repeat_id;
 				var editRepeatModal = $uibModal.open({
 					templateUrl: template_dirs + '/repeats/repeat.html',
-					controller: 'editRepeat'
+					controller: 'editRepeatCtrl'
 				})
 			}
 		})
