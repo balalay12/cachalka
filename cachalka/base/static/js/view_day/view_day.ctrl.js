@@ -12,6 +12,8 @@
 			vm.addRepeat = addRepeat;
 			vm.editRepeat = editRepeat;
 
+			console.log($stateParams.date);
+
 			function allSets() {
 				setsFactory.getAllSets({date_train: $stateParams.date}, function(data) {
 					vm.sets = data;

@@ -49,7 +49,7 @@ angular
 				controller: 'diaryCtrl as vm'
 			})
 			.state('main.day', {
-				url: '/day?date',
+				url: '/day/:date',
 				templateUrl: template_dirs + '/view_day/view_day.html',
 				controller: 'viewDayCtrl as vm'
 			})
